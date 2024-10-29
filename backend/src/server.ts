@@ -19,7 +19,7 @@ app.use(express.urlencoded({extended: true}));
 
 // Basic ROute
 app.get("/", (req, res) => {
-    res.send("Maaya Dating App!");
+    res.send("leftovers Dating App!");
 })
 
 // Start server

@@ -1,6 +1,5 @@
-import mongoose, { Schema } from "mongoose";
 import { UserEntity } from "@/core/entities/user.entity";
-import { url } from "inspector";
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema<UserEntity>({
     phone: { type: String, sparse: true},
@@ -39,6 +38,11 @@ const userSchema = new Schema<UserEntity>({
         default: "pending",
         enum: ["active", "pending", "banned"]
     },
+    questPreferences: {
+        interests: { type: [String], default: [] },
+        difficulty: { type: [String], default: [] },
+        types: { type: [String], default: [] }
+    },
     lastActive: { type: Date, default: Date.now }
     }, { 
     timestamps: true 
@@ -48,4 +52,4 @@ userSchema.index({ location: '2dsphere' });
 userSchema.index({ phone: 1 }, { sparse: true });
 userSchema.index({ email: 1 }, { sparse: true });
 
-export const model = mongoose.model<UserEntity>("User", userSchema)
+export const UserModel = mongoose.model<UserEntity>("User", userSchema)
