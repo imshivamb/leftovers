@@ -3,12 +3,13 @@ import { TokenService } from '@/infra/services/token.service';
 import { JWTPayload } from '@/core/types/auth.types';
 
 export const authMiddleware = (tokenService: TokenService) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const authHeader = req.headers.authorization;
       
       if (!authHeader?.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'No token provided' });
+       res.status(401).json({ message: 'No token provided' });
+       return
       }
 
       const token = authHeader.split(' ')[1];

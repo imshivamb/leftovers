@@ -23,6 +23,9 @@ export const config = {
         projectId: process.env.FIREBASE_PROJECT_ID!,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
         privateKey: process.env.FIREBASE_PRIVATE_KEY!
+    },
+    cors: {
+        origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
     }
 };
 

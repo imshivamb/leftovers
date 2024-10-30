@@ -96,25 +96,28 @@ export class AuthController {
         }
     }
 
-    async refreshToken (req: Request<{}, {}, RefreshTokenDTO>, res: Response) {
+    async refreshToken(
+        req: Request<{}, {}, RefreshTokenDTO>,
+        res: Response
+    ): Promise<void> {
         try {
             const { refreshToken } = req.body;
-
-            const decoded = await this.tokenService.verifyRefreshToken(refreshToken);
+            
+            // Verify refresh token
+            const decoded = this.tokenService.verifyRefreshToken(refreshToken);
             const user = await this.userRepository.findById(decoded.userId);
 
             if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-              }
-        
-              const tokens = this.tokenService.generateTokens(user.id);
-              res.json({ tokens });
-        } catch (error) {
-            if(error instanceof Error) {
-                res.status(400).json({ message: error.message });
-               } else {
-                res.status(400).json({ message: 'An unknown error occurred' });
+                res.status(404).json({ message: 'User not found' });
+                return;
             }
+
+            // Generate new tokens
+            const tokens = this.tokenService.generateTokens(user.id);
+            
+            res.json({ tokens });
+        } catch (error) {
+            res.status(401).json({ message: 'Invalid refresh token' });
         }
     }
 }
