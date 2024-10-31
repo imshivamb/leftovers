@@ -10,7 +10,7 @@ export class UpdateProfileUseCase {
 
     async execute(userId: string, data: any, files?: Express.Multer.File[]) {
          // Handle photo uploads if present
-         let photos = [];
+         let photos: string[] = [];
          if (files?.length) {
             photos = await Promise.all(
                 files.map(file => this.storageService.uploadPhoto(file))
@@ -22,7 +22,7 @@ export class UpdateProfileUseCase {
                 ...data,
                 photos: photos.length ? photos.map(url => ({ url, isMain: false})) : undefined
             },
-            status: 'active' // Activate user after profile completion
+            status: 'active'
          });
 
          return updatedUser

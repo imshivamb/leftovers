@@ -1,18 +1,35 @@
-import rateLimit from 'express-rate-limit';
-import RedisStore from 'rate-limit-redis';
-import { redis } from '@/infra/services/redis.service';
+import { Request, Response, NextFunction } from "express";
+import { RedisService } from "@/infra/services/redis.service";
 
-export const authLimiter = rateLimit({
-    store: new RedisStore({
-        sendCommand: (...args: string[]) => redis.sendCommand(args)
-    }),
-    windowMs: 15 * 60 * 1000, //15 minutes
-    max: 5,
-    message: 'Too many authentication attempts, please try again later',
+const redisService = new RedisService();
 
-})
+export const createRateLimiter = (
+    prefix: string,
+    limit: number,
+    windowSeconds: number
+) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const key = `${prefix}:${req.ip}`;
+            const count = await redisService.incrementCounter(key, windowSeconds);
 
-export const generalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-})
+            if(count > limit) {
+                return res.status(429).json({
+                    message: 'Too many requests, please try again later',
+                    retryAfter: windowSeconds
+                })
+            }
+            // Add rate limit info to response headers
+            res.setHeader('X-RateLimit-Limit', limit);
+            res.setHeader('X-RateLimit-Remaining', limit - count);
+
+            next();
+        } catch (error) {
+            next(error)
+        }
+    }
+}
+
+// Pre-configured rate limiters
+export const authLimiter = createRateLimiter('auth', 5, 900);
+export const generalLimiter = createRateLimiter('general', 100, 60)
