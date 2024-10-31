@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express, { Application } from "express";
 import helmet from "helmet";
 import { connectDb } from "./config/database";
-import { redisClient } from "./config/redis.config";
+import { redisClient, testRedisConnection } from "./config/redis.config";
 import mongoose from "mongoose";
 import { Server } from "http";
 
@@ -64,8 +64,12 @@ const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
     try {
+        // Test Redis connection
+        await testRedisConnection();
+        
         // Connect to MongoDB
         await connectDb();
+
         const server = app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });

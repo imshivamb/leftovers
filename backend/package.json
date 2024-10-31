@@ -2,11 +2,15 @@
   "name": "leftovers-app",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "dev": "tsx watch src/server.ts",
+
+    "scripts": {
     "build": "tsc",
-    "start": "node build/server.js"
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean"
   },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
