@@ -42,4 +42,24 @@ export class AuthController {
             res.status(401).json({ message: 'Invalid refresh token' });
         }
     }
+
+    async logout(req: Request, res: Response) {
+        try {
+            const userId = req.user?.id; 
+            
+            if (!userId) {
+                res.status(401).json({ message: 'User not authenticated' });
+                return;
+            }
+
+            await this.authService.logout(userId);
+            res.status(200).json({ message: 'Successfully logged out' });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({ message: error.message });
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    }
 }

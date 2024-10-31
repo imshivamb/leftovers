@@ -118,4 +118,12 @@ export class AuthService {
 
         return { tokens };
     }
+
+    async logout(userId: string): Promise<void> {
+        if (!userId) {
+            throw new Error('User ID is required for logout');
+        }
+        
+        await this.redisService.invalidateUserSession(userId);
+    }
 }
